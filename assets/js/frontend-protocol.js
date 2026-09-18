@@ -1,21 +1,38 @@
 (function ($) {
 	'use strict';
 
-	function extractProtocolLine(response) {
+	function getNestedData(response) {
 		if (!response) {
-			return '';
+			return {};
 		}
-
-		var nested = {};
 
 		if (response.data && response.data.data && typeof response.data.data === 'object') {
-			nested = response.data.data;
-		} else if (response.data && typeof response.data === 'object' && !response.data.message) {
-			nested = response.data;
-		} else if (response.data && typeof response.data === 'object') {
-			nested = response.data;
+			return response.data.data;
 		}
 
+		if (response.data && typeof response.data === 'object') {
+			return response.data;
+		}
+
+		return {};
+	}
+
+	function extractProtocol(response) {
+		var nested = getNestedData(response);
+		var protocol = nested.protocol || '';
+
+		if (protocol) {
+			return String(protocol);
+		}
+
+		var line = nested.protocol_line || '';
+		var match = String(line).match(/\d{18}/);
+
+		return match ? match[0] : '';
+	}
+
+	function extractProtocolLine(response) {
+		var nested = getNestedData(response);
 		var line = nested.protocol_line || '';
 
 		if (!line) {
@@ -90,6 +107,43 @@
 		return $wrap.html();
 	}
 
+	function stripProtocolFromMessage(message, protocol, line) {
+		var cleaned = String(message || '');
+
+		if (line) {
+			cleaned = cleaned.split(line).join(' ');
+		}
+
+		if (protocol) {
+			cleaned = cleaned.split(protocol).join(' ');
+		}
+
+		cleaned = cleaned.replace(/Tire print ou anote esse protocolo de inscrição:?\s*/gi, ' ');
+
+		return $.trim(cleaned.replace(/\s+/g, ' '));
+	}
+
+	function buildProtocolHighlight(protocol, line) {
+		var label = String(line || '')
+			.replace(protocol, '')
+			.replace(/:\s*$/, '')
+			.trim();
+
+		if (!label) {
+			label = 'Tire print ou anote esse protocolo de inscrição';
+		}
+
+		var safeLabel = $('<div>').text(label).html();
+		var safeProtocol = $('<div>').text(protocol).html();
+
+		return (
+			'<div class="protocolo-elementor-protocol" role="status">' +
+				'<span class="protocolo-elementor-protocol-label">' + safeLabel + '</span>' +
+				'<code class="protocolo-elementor-protocol-code">' + safeProtocol + '</code>' +
+			'</div>'
+		);
+	}
+
 	function findMessageNode(target) {
 		var $root = $(target);
 		var $message = $root.find('.elementor-message-success').first();
@@ -110,9 +164,10 @@
 	}
 
 	function renderProtocolBelowMessage(target, response) {
+		var protocol = extractProtocol(response);
 		var line = extractProtocolLine(response);
 
-		if (!line) {
+		if (!protocol) {
 			return false;
 		}
 
@@ -122,15 +177,17 @@
 			return false;
 		}
 
-		if ($message.text().indexOf(line) !== -1) {
+		if ($message.find('.protocolo-elementor-protocol').length) {
 			return true;
 		}
 
 		var baseMessage = extractMessage(response) || $.trim($message.text());
-		var safeMessage = sanitizeMessageHtml(baseMessage);
-		var safeLine = $('<div>').text(line).html();
+		baseMessage = stripProtocolFromMessage(baseMessage, protocol, line);
 
-		$message.html(safeMessage + (safeMessage ? '<br>' : '') + safeLine);
+		var safeMessage = sanitizeMessageHtml(baseMessage);
+		var highlight = buildProtocolHighlight(protocol, line);
+
+		$message.html(safeMessage + highlight);
 
 		return true;
 	}

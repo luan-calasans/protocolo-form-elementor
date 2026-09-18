@@ -16,3 +16,39 @@
 	opacity: 0.9;
 	color: #fff !important;
 }
+
+.elementor-message-success .protocolo-elementor-protocol {
+	display: block;
+	margin: 18px 0 4px;
+	padding: 22px 18px;
+	background: #fff7f5;
+	border: 2px solid #df785f;
+	border-radius: 6px;
+	text-align: center;
+}
+
+.elementor-message-success .protocolo-elementor-protocol-label {
+	display: block;
+	margin: 0 0 10px;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #df785f;
+	line-height: 1.4;
+}
+
+.elementor-message-success .protocolo-elementor-protocol-code {
+	display: block;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: clamp(1.35rem, 4.5vw, 1.85rem);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	line-height: 1.25;
+	color: #111827;
+	word-break: break-all;
+}

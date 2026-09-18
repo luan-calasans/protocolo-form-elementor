@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PROTOCOLO_ELEMENTOR_VERSION', '1.2.1' );
+define( 'PROTOCOLO_ELEMENTOR_VERSION', '1.2.2' );
 define( 'PROTOCOLO_ELEMENTOR_FILE', __FILE__ );
 define( 'PROTOCOLO_ELEMENTOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PROTOCOLO_ELEMENTOR_URL', plugin_dir_url( __FILE__ ) );

@@ -109,7 +109,7 @@ final class Mailer {
 		$intro   = __( 'Parabéns! Você se inscreveu para participar do ProBEM!', 'protocolo-elementor' );
 		$label   = __( 'Seu protocolo', 'protocolo-elementor' );
 		$outro   = __( 'Acompanhe as próximas fases em', 'protocolo-elementor' );
-		$site_url = 'https://adesaf.org.br';
+		$site_url = 'https://adesaf.org.br/probem/';
 		$site_label = 'adesaf.org.br';
 		$sign    = __( 'Atenciosamente,<br>Equipe ProBEM', 'protocolo-elementor' );
 
