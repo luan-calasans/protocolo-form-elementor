@@ -6,6 +6,7 @@ namespace ProtocoloElementor\Elementor;
 
 use ProtocoloElementor\Plugin;
 use ProtocoloElementor\Protocol\Generator;
+use ProtocoloElementor\Protocol\Mailer;
 use ElementorPro\Modules\Forms\Classes\Ajax_Handler;
 use ElementorPro\Modules\Forms\Classes\Form_Record;
 use ElementorPro\Modules\Forms\Submissions\Actions\Save_To_Database;
@@ -23,9 +24,13 @@ final class SubmissionListener {
 	/** @var SubmissionRepository */
 	private $repository;
 
-	public function __construct( Generator $generator, SubmissionRepository $repository ) {
+	/** @var Mailer */
+	private $mailer;
+
+	public function __construct( Generator $generator, SubmissionRepository $repository, Mailer $mailer ) {
 		$this->generator  = $generator;
 		$this->repository = $repository;
+		$this->mailer     = $mailer;
 	}
 
 	public function register(): void {
@@ -129,6 +134,7 @@ final class SubmissionListener {
 			return;
 		}
 
+		$this->mailer->send_protocol( $result['protocol'], $fields );
 		$this->append_protocol_to_success( $ajax_handler, $result['protocol'] );
 	}
 

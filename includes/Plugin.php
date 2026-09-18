@@ -10,6 +10,7 @@ use ProtocoloElementor\Elementor\SubmissionListener;
 use ProtocoloElementor\Elementor\SubmissionRepository;
 use ProtocoloElementor\Protocol\Fingerprint;
 use ProtocoloElementor\Protocol\Generator;
+use ProtocoloElementor\Protocol\Mailer;
 use ProtocoloElementor\Protocol\Validator;
 
 final class Plugin {
@@ -91,7 +92,7 @@ final class Plugin {
 
 		$booted = true;
 
-		( new SubmissionListener( $this->generator, $this->repository ) )->register();
+		( new SubmissionListener( $this->generator, $this->repository, new Mailer() ) )->register();
 	}
 
 	public function maybe_render_dependency_notice(): void {
