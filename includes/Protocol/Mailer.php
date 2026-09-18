@@ -16,10 +16,9 @@ final class Mailer {
 			return false;
 		}
 
-		$name    = $this->field_value( $fields, 'name' );
 		$subject = sprintf(
 			/* translators: %s: protocol number */
-			__( 'Seu protocolo: %s', 'protocolo-elementor' ),
+			__( 'Seu protocolo ProBEM: %s', 'protocolo-elementor' ),
 			$protocol
 		);
 
@@ -27,7 +26,7 @@ final class Mailer {
 			'Content-Type: text/html; charset=UTF-8',
 		);
 
-		$body = $this->build_html_body( $protocol, $name );
+		$body = $this->build_html_body( $protocol );
 
 		return (bool) wp_mail( $email, $subject, $body, $headers );
 	}
@@ -105,31 +104,22 @@ final class Mailer {
 		return trim( (string) $value );
 	}
 
-	private function build_html_body( string $protocol, string $name ): string {
-		$site_name = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
-		$greeting  = '' !== $name
-			? sprintf(
-				/* translators: %s: person name */
-				__( 'Olá, %s.', 'protocolo-elementor' ),
-				$name
-			)
-			: __( 'Olá.', 'protocolo-elementor' );
-
-		$intro   = __( 'Recebemos o seu envio com sucesso. O número do seu protocolo é:', 'protocolo-elementor' );
-		$label   = __( 'Protocolo', 'protocolo-elementor' );
-		$outro   = __( 'Guarde este número. Ele será necessário para consultas futuras.', 'protocolo-elementor' );
-		$sign    = sprintf(
-			/* translators: %s: site name */
-			__( 'Atenciosamente,<br>%s', 'protocolo-elementor' ),
-			esc_html( $site_name )
-		);
+	private function build_html_body( string $protocol ): string {
+		$brand   = 'ProBEM';
+		$intro   = __( 'Parabéns! Você se inscreveu para participar do ProBEM!', 'protocolo-elementor' );
+		$label   = __( 'Seu protocolo', 'protocolo-elementor' );
+		$outro   = __( 'Acompanhe as próximas fases em', 'protocolo-elementor' );
+		$site_url = 'https://adesaf.org.br';
+		$site_label = 'adesaf.org.br';
+		$sign    = __( 'Atenciosamente,<br>Equipe ProBEM', 'protocolo-elementor' );
 
 		$protocol_escaped = esc_html( $protocol );
-		$greeting_escaped = esc_html( $greeting );
+		$brand_escaped    = esc_html( $brand );
 		$intro_escaped    = esc_html( $intro );
 		$label_escaped    = esc_html( $label );
 		$outro_escaped    = esc_html( $outro );
-		$site_escaped     = esc_html( $site_name );
+		$site_url_escaped = esc_url( $site_url );
+		$site_label_escaped = esc_html( $site_label );
 
 		return <<<HTML
 <!DOCTYPE html>
@@ -137,7 +127,7 @@ final class Mailer {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{$site_escaped}</title>
+<title>{$brand_escaped}</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:Georgia,'Times New Roman',serif;">
 	<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 16px;">
@@ -147,16 +137,13 @@ final class Mailer {
 					<tr>
 						<td style="padding:28px 32px 12px;border-bottom:1px solid #e5e7eb;">
 							<p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;">
-								{$site_escaped}
+								{$brand_escaped}
 							</p>
 						</td>
 					</tr>
 					<tr>
 						<td style="padding:36px 32px 40px;">
-							<p style="margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.5;color:#111827;">
-								{$greeting_escaped}
-							</p>
-							<p style="margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#374151;">
+							<p style="margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.5;color:#111827;">
 								{$intro_escaped}
 							</p>
 							<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border:1px solid #e5e7eb;">
@@ -172,7 +159,7 @@ final class Mailer {
 								</tr>
 							</table>
 							<p style="margin:28px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;color:#6b7280;">
-								{$outro_escaped}
+								{$outro_escaped} <a href="{$site_url_escaped}" style="color:#111827;text-decoration:underline;">{$site_label_escaped}</a>
 							</p>
 							<p style="margin:32px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;color:#374151;">
 								{$sign}

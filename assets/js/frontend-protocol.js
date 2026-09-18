@@ -21,7 +21,7 @@
 		if (!line) {
 			var protocol = nested.protocol || '';
 			if (protocol) {
-				line = 'Protocolo: ' + protocol;
+				line = 'Tire print ou anote esse protocolo de inscrição: ' + protocol;
 			}
 		}
 

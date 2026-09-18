@@ -168,7 +168,7 @@ final class SubmissionListener {
 	private function append_protocol_to_success( $ajax_handler, string $protocol ): void {
 		$line = sprintf(
 			/* translators: %s: protocol number */
-			__( 'Protocolo: %s', 'protocolo-elementor' ),
+			__( 'Tire print ou anote esse protocolo de inscrição: %s', 'protocolo-elementor' ),
 			$protocol
 		);
 
