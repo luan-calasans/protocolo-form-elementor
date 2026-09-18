@@ -100,6 +100,8 @@ Protocolo: 202608261430221847
 
 A mensagem original do formulário é preservada; o protocolo é apenas acrescentado.
 
+Links `<a href="https://...">` na mensagem de sucesso do Elementor são renderizados (não escapados) e estilizados como botão. Apenas URLs `http`/`https` são permitidas; demais tags HTML continuam sendo tratadas como texto.
+
 ---
 
 ## Estrutura do projeto
@@ -108,6 +110,7 @@ A mensagem original do formulário é preservada; o protocolo é apenas acrescen
 protocolo-elementor/
 ├── protocolo-elementor.php          # Bootstrap do plugin
 ├── assets/js/frontend-protocol.js   # Exibe o protocolo no frontend
+├── assets/css/frontend-protocol.css # Estilo de botão para links na mensagem
 └── includes/
     ├── Plugin.php
     ├── Admin/

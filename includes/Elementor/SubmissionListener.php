@@ -143,6 +143,13 @@ final class SubmissionListener {
 			return;
 		}
 
+		wp_register_style(
+			'protocolo-elementor-frontend',
+			PROTOCOLO_ELEMENTOR_URL . 'assets/css/frontend-protocol.css',
+			array(),
+			PROTOCOLO_ELEMENTOR_VERSION
+		);
+
 		wp_register_script(
 			'protocolo-elementor-frontend',
 			PROTOCOLO_ELEMENTOR_URL . 'assets/js/frontend-protocol.js',
@@ -151,6 +158,7 @@ final class SubmissionListener {
 			true
 		);
 
+		wp_enqueue_style( 'protocolo-elementor-frontend' );
 		wp_enqueue_script( 'protocolo-elementor-frontend' );
 	}
 

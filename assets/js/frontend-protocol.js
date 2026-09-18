@@ -44,6 +44,52 @@
 		return '';
 	}
 
+	function decodeHtmlEntities(value) {
+		if (!value || value.indexOf('&') === -1) {
+			return value;
+		}
+
+		return $('<textarea>').html(value).text();
+	}
+
+	/**
+	 * Escapa texto e permite apenas <a> com href http(s).
+	 * Demais tags são convertidas em texto.
+	 */
+	function sanitizeMessageHtml(rawMessage) {
+		var decoded = decodeHtmlEntities(rawMessage || '');
+		var $wrap = $('<div>').html(decoded);
+
+		$wrap.find('*').not('a').each(function () {
+			$(this).replaceWith(document.createTextNode($(this).text()));
+		});
+
+		$wrap.find('a').each(function () {
+			var $link = $(this);
+			var href = $.trim($link.attr('href') || '');
+			var className = $.trim($link.attr('class') || '');
+			var text = $link.text();
+
+			if (!/^https?:\/\//i.test(href)) {
+				$link.replaceWith(document.createTextNode(text));
+				return;
+			}
+
+			var $safe = $('<a></a>')
+				.attr({
+					href: href,
+					target: '_blank',
+					rel: 'noopener noreferrer',
+					class: 'protocolo-elementor-link' + (className ? ' ' + className : ''),
+				})
+				.text(text);
+
+			$link.replaceWith($safe);
+		});
+
+		return $wrap.html();
+	}
+
 	function findMessageNode(target) {
 		var $root = $(target);
 		var $message = $root.find('.elementor-message-success').first();
@@ -81,7 +127,7 @@
 		}
 
 		var baseMessage = extractMessage(response) || $.trim($message.text());
-		var safeMessage = $('<div>').text(baseMessage).html();
+		var safeMessage = sanitizeMessageHtml(baseMessage);
 		var safeLine = $('<div>').text(line).html();
 
 		$message.html(safeMessage + (safeMessage ? '<br>' : '') + safeLine);
