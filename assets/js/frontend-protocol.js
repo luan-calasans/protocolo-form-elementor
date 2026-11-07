@@ -61,6 +61,26 @@
 		return '';
 	}
 
+	function shouldReplaceProbemWithPead(response) {
+		var nested = getNestedData(response);
+
+		if (typeof nested.replace_probem_with_pead === 'boolean') {
+			return nested.replace_probem_with_pead;
+		}
+
+		var formName = String(nested.form_name || '');
+
+		return /PEAD/i.test(formName);
+	}
+
+	function adaptMessageForForm(message, response) {
+		if (!shouldReplaceProbemWithPead(response)) {
+			return message;
+		}
+
+		return String(message || '').replace(/ProBEM/gi, 'PEAD');
+	}
+
 	function decodeHtmlEntities(value) {
 		if (!value || value.indexOf('&') === -1) {
 			return value;
@@ -183,6 +203,7 @@
 
 		var baseMessage = extractMessage(response) || $.trim($message.text());
 		baseMessage = stripProtocolFromMessage(baseMessage, protocol, line);
+		baseMessage = adaptMessageForForm(baseMessage, response);
 
 		var safeMessage = sanitizeMessageHtml(baseMessage);
 		var highlight = buildProtocolHighlight(protocol, line);

@@ -135,7 +135,7 @@ final class SubmissionListener {
 		}
 
 		$this->mailer->send_protocol( $result['protocol'], $fields );
-		$this->append_protocol_to_success( $ajax_handler, $result['protocol'] );
+		$this->append_protocol_to_success( $ajax_handler, $result['protocol'], $form_name );
 	}
 
 	public function enqueue_frontend_script(): void {
@@ -165,16 +165,20 @@ final class SubmissionListener {
 	/**
 	 * @param Ajax_Handler|object $ajax_handler
 	 */
-	private function append_protocol_to_success( $ajax_handler, string $protocol ): void {
+	private function append_protocol_to_success( $ajax_handler, string $protocol, string $form_name ): void {
 		$line = sprintf(
 			/* translators: %s: protocol number */
 			__( 'Tire print ou anote esse protocolo de inscrição: %s', 'protocolo-elementor' ),
 			$protocol
 		);
 
+		$is_pead = Plugin::is_pead_form( $form_name );
+
 		if ( is_object( $ajax_handler ) && method_exists( $ajax_handler, 'add_response_data' ) ) {
 			$ajax_handler->add_response_data( 'protocol', $protocol );
 			$ajax_handler->add_response_data( 'protocol_line', $line );
+			$ajax_handler->add_response_data( 'form_name', $form_name );
+			$ajax_handler->add_response_data( 'replace_probem_with_pead', $is_pead );
 		}
 
 		// Acrescenta à mensagem configurada sem substituí-la, quando a API interna permitir.
@@ -199,6 +203,7 @@ final class SubmissionListener {
 						$current = implode( ' ', $messages['success'] );
 					}
 
+					$current             = Plugin::adapt_message_for_form( $current, $form_name );
 					$messages['success'] = trim( $current . ( '' !== $current ? "\n" : '' ) . $line );
 					$property->setValue( $ajax_handler, $messages );
 				}
@@ -210,6 +215,7 @@ final class SubmissionListener {
 				$data = $property->getValue( $ajax_handler );
 
 				if ( is_array( $data ) && isset( $data['message'] ) && is_string( $data['message'] ) ) {
+					$data['message'] = Plugin::adapt_message_for_form( $data['message'], $form_name );
 					$data['message'] = trim( $data['message'] . "\n" . $line );
 					$property->setValue( $ajax_handler, $data );
 				}

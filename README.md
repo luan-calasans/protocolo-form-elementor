@@ -102,6 +102,8 @@ A mensagem original do formulário é preservada; o protocolo é apenas acrescen
 
 Links `<a href="https://...">` na mensagem de sucesso do Elementor são renderizados (não escapados) e estilizados como botão. Apenas URLs `http`/`https` são permitidas; demais tags HTML continuam sendo tratadas como texto.
 
+Se o **Form Name** contém `PEAD` (ex.: `Formulário PEAD`), a mensagem de sucesso troca automaticamente `ProBEM` por `PEAD`. Formulários ProBEM mantêm o texto original.
+
 ---
 
 ## Estrutura do projeto

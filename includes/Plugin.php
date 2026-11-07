@@ -142,6 +142,21 @@ final class Plugin {
 		return false;
 	}
 
+	/**
+	 * Formulários PEAD reutilizam a mensagem do ProBEM com a marca trocada.
+	 */
+	public static function is_pead_form( string $form_name ): bool {
+		return false !== stripos( trim( $form_name ), 'PEAD' );
+	}
+
+	public static function adapt_message_for_form( string $message, string $form_name ): string {
+		if ( ! self::is_pead_form( $form_name ) ) {
+			return $message;
+		}
+
+		return str_ireplace( 'ProBEM', 'PEAD', $message );
+	}
+
 	public static function is_plugin_meta_key( string $key ): bool {
 		return 0 === strpos( $key, 'protocolo_elementor_' )
 			|| isset( self::LEGACY_META_MAP[ $key ] );
