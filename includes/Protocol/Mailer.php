@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace ProtocoloElementor\Protocol;
 
+use ProtocoloElementor\Plugin;
+
 final class Mailer {
 
 	/**
 	 * @param array<string, mixed> $fields
 	 */
-	public function send_protocol( string $protocol, array $fields ): bool {
+	public function send_protocol( string $protocol, array $fields, string $form_name = '' ): bool {
 		$email = $this->resolve_email( $fields );
 
 		if ( '' === $email || ! is_email( $email ) ) {
@@ -21,12 +23,13 @@ final class Mailer {
 			__( 'Seu protocolo ProBEM: %s', 'protocolo-elementor' ),
 			$protocol
 		);
+		$subject = Plugin::adapt_message_for_form( $subject, $form_name );
 
 		$headers = array(
 			'Content-Type: text/html; charset=UTF-8',
 		);
 
-		$body = $this->build_html_body( $protocol );
+		$body = $this->build_html_body( $protocol, $form_name );
 
 		return (bool) wp_mail( $email, $subject, $body, $headers );
 	}
@@ -104,22 +107,39 @@ final class Mailer {
 		return trim( (string) $value );
 	}
 
-	private function build_html_body( string $protocol ): string {
-		$brand   = 'ProBEM';
-		$intro   = __( 'Parabéns! Você se inscreveu para participar do ProBEM!', 'protocolo-elementor' );
-		$label   = __( 'Seu protocolo', 'protocolo-elementor' );
-		$outro   = __( 'Acompanhe as próximas fases em', 'protocolo-elementor' );
-		$site_url = 'https://adesaf.org.br/probem/';
-		$site_label = 'adesaf.org.br';
-		$sign    = __( 'Atenciosamente,<br>Equipe ProBEM', 'protocolo-elementor' );
+	private function build_html_body( string $protocol, string $form_name ): string {
+		$is_pead = Plugin::is_pead_form( $form_name );
 
-		$protocol_escaped = esc_html( $protocol );
-		$brand_escaped    = esc_html( $brand );
-		$intro_escaped    = esc_html( $intro );
-		$label_escaped    = esc_html( $label );
-		$outro_escaped    = esc_html( $outro );
-		$site_url_escaped = esc_url( $site_url );
+		$brand = Plugin::adapt_message_for_form( 'ProBEM', $form_name );
+		$intro = Plugin::adapt_message_for_form(
+			__( 'Parabéns! Você se inscreveu para participar do ProBEM!', 'protocolo-elementor' ),
+			$form_name
+		);
+		$label = __( 'Seu protocolo', 'protocolo-elementor' );
+		$outro = __( 'Acompanhe as próximas fases em', 'protocolo-elementor' );
+		$site_url = $is_pead
+			? 'https://adesaf.org.br/pead/'
+			: 'https://adesaf.org.br/probem/';
+		$site_label = 'adesaf.org.br';
+		$sign = Plugin::adapt_message_for_form(
+			__( 'Atenciosamente,<br>Equipe ProBEM', 'protocolo-elementor' ),
+			$form_name
+		);
+
+		$protocol_escaped   = esc_html( $protocol );
+		$brand_escaped      = esc_html( $brand );
+		$intro_escaped      = esc_html( $intro );
+		$label_escaped      = esc_html( $label );
+		$outro_escaped      = esc_html( $outro );
+		$site_url_escaped   = esc_url( $site_url );
 		$site_label_escaped = esc_html( $site_label );
+		// $sign contém <br> intencional.
+		$sign_safe = wp_kses(
+			$sign,
+			array(
+				'br' => array(),
+			)
+		);
 
 		return <<<HTML
 <!DOCTYPE html>
@@ -162,7 +182,7 @@ final class Mailer {
 								{$outro_escaped} <a href="{$site_url_escaped}" style="color:#111827;text-decoration:underline;">{$site_label_escaped}</a>
 							</p>
 							<p style="margin:32px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;color:#374151;">
-								{$sign}
+								{$sign_safe}
 							</p>
 						</td>
 					</tr>

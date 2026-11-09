@@ -134,7 +134,7 @@ final class SubmissionListener {
 			return;
 		}
 
-		$this->mailer->send_protocol( $result['protocol'], $fields );
+		$this->mailer->send_protocol( $result['protocol'], $fields, $form_name );
 		$this->append_protocol_to_success( $ajax_handler, $result['protocol'], $form_name );
 	}
 
