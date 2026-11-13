@@ -18,12 +18,10 @@ final class Mailer {
 			return false;
 		}
 
-		$subject = sprintf(
-			/* translators: %s: protocol number */
-			__( 'Seu protocolo ProBEM: %s', 'protocolo-elementor' ),
-			$protocol
+		$subject = Plugin::adapt_message_for_form(
+			__( 'Inscrição ProBEM', 'protocolo-elementor' ),
+			$form_name
 		);
-		$subject = Plugin::adapt_message_for_form( $subject, $form_name );
 
 		$headers = array(
 			'Content-Type: text/html; charset=UTF-8',
@@ -115,6 +113,10 @@ final class Mailer {
 			__( 'Parabéns! Você se inscreveu para participar do ProBEM!', 'protocolo-elementor' ),
 			$form_name
 		);
+		$follow_up = __(
+			'Seu cadastro já está em nosso banco de reservas. Entraremos em contato conforme disponibilidade de vagas. Agora, é só aguardar. Boa sorte!',
+			'protocolo-elementor'
+		);
 		$label = __( 'Seu protocolo', 'protocolo-elementor' );
 		$outro = __( 'Acompanhe as próximas fases em', 'protocolo-elementor' );
 		$site_url = $is_pead
@@ -129,6 +131,7 @@ final class Mailer {
 		$protocol_escaped   = esc_html( $protocol );
 		$brand_escaped      = esc_html( $brand );
 		$intro_escaped      = esc_html( $intro );
+		$follow_up_escaped  = esc_html( $follow_up );
 		$label_escaped      = esc_html( $label );
 		$outro_escaped      = esc_html( $outro );
 		$site_url_escaped   = esc_url( $site_url );
@@ -163,8 +166,11 @@ final class Mailer {
 					</tr>
 					<tr>
 						<td style="padding:36px 32px 40px;">
-							<p style="margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.5;color:#111827;">
+							<p style="margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.5;color:#111827;">
 								{$intro_escaped}
+							</p>
+							<p style="margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.5;color:#111827;">
+								{$follow_up_escaped}
 							</p>
 							<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border:1px solid #e5e7eb;">
 								<tr>
